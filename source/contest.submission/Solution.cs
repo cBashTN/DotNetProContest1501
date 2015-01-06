@@ -3,36 +3,29 @@ using contest.submission.contract;
 
 namespace contest.submission
 {
- 
-  [Serializable]
-  public class Solution : IDnp1501Solution
-  {
-    Point startpoint, endpoint;
-    static Point currentposition;
-    public void Start(BoolArray ground, Point startpoint, Point endpoint)
+
+    [Serializable]
+    public class Solution : IDnp1501Solution
     {
-      this.startpoint = startpoint;
-      this.endpoint = endpoint;
-      currentposition = startpoint;
-      NextStep();
+        private int _stepNumber;
+        private Point[] Path { get; set; }
+
+        public void Start(BoolArray ground, Point startpoint, Point endpoint)
+        {
+            IPathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
+            Path = pathFinder.FindAPath();
+            
+            _stepNumber = 1; // 0 would be the startpoint
+
+            NextStep();
+        }
+
+        public void NextStep()
+        {
+
+            MakeMove(Path[_stepNumber++]);
+        }
+
+        public event Action<Point> MakeMove;
     }
-
-    public void NextStep()
-    {
-      Point nextposition = new Point();
-      int difx = currentposition.x - endpoint.x;
-      int dify = currentposition.y - endpoint.y;
-
-      if (difx < 0) currentposition.x++;
-      if (difx > 0) currentposition.x--;
-
-      if (dify < 0) currentposition.y++;
-      if (dify > 0) currentposition.y--;
-      
-      MakeMove(currentposition);
-
-    }
-
-    public event Action<Point> MakeMove;
-  }
 }

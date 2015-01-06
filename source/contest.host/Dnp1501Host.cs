@@ -10,7 +10,7 @@ namespace contest.host
   public class Dnp1501Host : IHost
   {
     int counter = 0;
-    const int maxsteps = 10000;
+    const int maxsteps = 40000;
 
     BoolArray ground = new BoolArray();
     Point startposition = new Point() { x = 0, y = 0 };
@@ -25,7 +25,9 @@ namespace contest.host
       var sut = (IDnp1501Solution)beitrag;
 
       sut.MakeMove += (nextposition) =>
-        {
+      {
+          //Console.WriteLine("nextposition: " + nextposition.x + "/" + nextposition.y);
+          counter++;
           if (!ground.IsMoveAllowed(currentposition, nextposition))
             stopmessage = string.Format("Unerlaubter Zug: von {0}, {1} auf {2}, {3}", currentposition.x, currentposition.y, nextposition.x, nextposition.y);
 
@@ -40,10 +42,9 @@ namespace contest.host
       
       currentposition.Clone(startposition);
       sut.Start(ground, startposition, endpostion);
-
+   
       for (int i = 0; i < maxsteps; i++)
       {
-        counter++;
         if (stopmessage != "") break;
         sut.NextStep();
       }
