@@ -10,10 +10,10 @@ namespace contest.submission
         public Point Startpoint;
         public Point Endpoint;
 
-        private readonly int[,] _stepData = new int[PlayGroundDimMaxX, PlayGroundDimMaxY];
-
         const int PlayGroundDimMaxX = 1024;
         const int PlayGroundDimMaxY = 1024;
+
+        private readonly int[,] _stepData = new int[PlayGroundDimMaxX, PlayGroundDimMaxY];
 
         public PlayGround(BoolArray ground, Point startpoint, Point endpoint)
         {
@@ -36,23 +36,22 @@ namespace contest.submission
         public void MapNewStep(List<Step> pathSteps, Point step, int stepNumber)
         {
             pathSteps.Add(new Step { Point = step, StepCount = stepNumber });
-            SetPoint(step, stepNumber);
+            SetStepNumberToPoint(stepNumber, step);
         }
 
         public List<Point> FilterOutInvalidSteps(List<Point> possibleSteps)
         {
             var filteredSteps = new List<Point>(8);
             filteredSteps.AddRange(possibleSteps.
-                Where(point => !IsOutsideOfTheGround(point)).
-                Where(point => !IsPointAWall(point))
-                );
+                Where(point => !IsOutsideOfTheGround(point)).   //this check must be before..
+                Where(point => !IsPointAWall(point)));          //..checking the actual array
             return filteredSteps;
         }
 
         private static bool IsOutsideOfTheGround(Point p)
         {
-            return ((p.x < 0) || (p.x > 1023) ||
-                    (p.y < 0) || (p.y > 1023));
+            return ((p.x < 0) || (p.x > PlayGroundDimMaxX-1) ||
+                    (p.y < 0) || (p.y > PlayGroundDimMaxY-1));
         }
 
         private bool IsPointAWall(Point p)
@@ -66,14 +65,9 @@ namespace contest.submission
             return _stepData[p.x, p.y] > 0;
         }
 
-        private void SetPoint(Point p, int stepCount)
+        private void SetStepNumberToPoint(int stepCount, Point p)
         {
             _stepData[p.x, p.y] = stepCount;
-        }
-
-        private int GetStepCount(Point p)
-        {
-            return _stepData[p.x, p.y];
         }
 
         private void InitializeWithZero()

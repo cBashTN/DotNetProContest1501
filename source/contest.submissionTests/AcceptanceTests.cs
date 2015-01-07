@@ -1,14 +1,15 @@
-﻿using contest.submission.contract;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Drawing;
+using contest.submission;
+using contest.submission.contract;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Point = contest.submission.contract.Point;
 
-namespace contest.submission.Tests
+namespace contest.submissionTests
 {
  
     [TestClass()]
-    public class SolutionTests
+    public class AcceptanceTests
     {
 
         [TestMethod()]
@@ -114,19 +115,35 @@ namespace contest.submission.Tests
 
             //Assert
             Assert.AreEqual(startpoint, testeePath[0]);
-            Assert.AreEqual(endpoint, testeePath[20020]);
+            Assert.AreEqual(endpoint, testeePath[expectedStepsCount]);
             Assert.AreEqual(expectedStepsCount, testeePath.Length-1); // Is the number of steps the same?
         }
 
-        //TrickyLabyrinthObstacles
+        [TestMethod()]
+        public void TrickyLabyrinthGroundTest()
+        {
+            // Arrange
+            Point startpoint = new Point { x = 0, y = 0 };
+            Point endpoint = new Point { x = 1023, y = 1023 };
 
 
+            BoolArray ground = GenerateObstacleFromBitmap("labyrinthTricky.bmp", new BoolArray(), 1); ;
+            const int expectedStepsCount = 3501;
+
+            // Act
+            IPathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
+            Point[] testeePath = pathFinder.FindAPath();
+
+            //Assert
+            Assert.AreEqual(startpoint, testeePath[0]);
+            Assert.AreEqual(endpoint, testeePath[expectedStepsCount]);
+            Assert.AreEqual(expectedStepsCount, testeePath.Length - 1); // Is the number of steps the same?
+        }
 
         public BoolArray GenerateObstacleFromBitmap(String bitmapCopiedContentName, BoolArray ground, int scale)
         {
             var b = new Bitmap(bitmapCopiedContentName, true);
 
-           // const int scale = 20;
             int shiftX = (1024 - b.Width * scale) / 2;
             int shiftY = (1024 - b.Height * scale) / 2;
 

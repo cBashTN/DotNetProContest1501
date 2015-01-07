@@ -16,7 +16,7 @@ namespace contest.submission
 
         /** Algorithm:
          * 
-         * Its mor or less the same as described here: http://en.wikipedia.org/wiki/Pathfinding#Sample_algorithm
+         * It's more or less the same as described here: http://en.wikipedia.org/wiki/Pathfinding#Sample_algorithm
          *
          * - Create a list of the eight adjacent cells, with a counter variable of the current element's counter variable + 1
          * 
@@ -26,7 +26,7 @@ namespace contest.submission
          * 
          * - Add all remaining cells in the list to the end of the main list
          * 
-         * - Go to the next item in the list and repeat until start p is reached 
+         * - Go to the next item in the list and repeat until start is reached 
          * 
         **/
 
@@ -103,8 +103,7 @@ namespace contest.submission
                     }
                 }
             }
-
-            var rnd = new Random();
+            Random rnd = new Random();
             return intersectedPoints[rnd.Next(intersectedPoints.Count)];
         }
 

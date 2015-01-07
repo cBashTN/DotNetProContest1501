@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "contest.submission", "contest.submission\contest.submission.csproj", "{A7B143C4-C728-4EB8-A889-F174F581F5AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "contest.submissionTests", "contest.submissionTests\contest.submissionTests.csproj", "{721AC2CA-FDDA-433F-AAEE-82620318C0BF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "contest.AcceptanceTests", "contest.submissionTests\contest.AcceptanceTests.csproj", "{721AC2CA-FDDA-433F-AAEE-82620318C0BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

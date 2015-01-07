@@ -7,7 +7,7 @@ namespace contest.submission
 
         /** Algorithm:
          * 
-         * Its mor or less the same as described here: http://en.wikipedia.org/wiki/Pathfinding#Sample_algorithm
+         * It's more or less the same as described here: http://en.wikipedia.org/wiki/Pathfinding#Sample_algorithm
          *
          * - Create a list of the eight adjacent cells, with a counter variable of the current element's counter variable + 1
          * 
