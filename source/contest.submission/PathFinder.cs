@@ -42,10 +42,13 @@ namespace contest.submission
             {
                 stepNumber++;
                 var lastStepNumber = stepNumber - 1;
-                foreach (var lastStep in pathSteps.ToArray().Where(step => step.StepCount == lastStepNumber))
+
+                for (var i = 0; i < pathSteps.Count; i++)
                 {
+                    if (pathSteps[i].StepCount != lastStepNumber) continue;
+
                     //the eight adjacent cells
-                    List<Point> everyDirectionsSteps = GetStepsForEveryDirections(lastStep.Point);
+                    List<Point> everyDirectionsSteps = GetStepsForEveryDirections(pathSteps[i].Point);
 
                     //Check.. If the cell is a wall, remove it from the list
                     List<Point> possibleSteps = _playGround.FilterOutInvalidSteps(everyDirectionsSteps);
@@ -56,7 +59,8 @@ namespace contest.submission
                         _playGround.MapNewStep(pathSteps, step, stepNumber);
                     }
                 }
-                if (stepNumber % 100 == 0) Console.WriteLine(stepNumber + "-th step");
+
+                if (stepNumber % 100 == 0) Console.Write("\r{0}-th step", stepNumber); 
             } while (!_playGround.IsStepUsedBefore(_playGround.Startpoint)); //Go to the next item in the list and repeat until start is reached
 
             return ChooseAPathLine(pathSteps);
@@ -73,7 +77,7 @@ namespace contest.submission
 
             stepCount--;
 
-            Console.WriteLine("Robot's tricorder found several paths with " + stepCountMax + " steps.");
+            Console.WriteLine(Environment.NewLine+"Robot's tricorder found several paths with " + stepCountMax + " steps.");
             Console.WriteLine("Robot now chooses one of them... ");
 
             for (var i = stepCount; i > 0; i--)
@@ -82,8 +86,9 @@ namespace contest.submission
                 List<Point> stepsForEveryDirections = GetStepsForEveryDirections(choosenPath[i + 1]);
 
                 choosenPath[i] = IntersectAndChooseRandom(stepsForEveryDirections, stepsWithNextStepCount);
-                if (i % 100 == 0) Console.WriteLine(i + "-th step");
+                if (i % 100 == 0) Console.Write(".");
             }
+            Console.Write(Environment.NewLine);
             choosenPath[0] = _playGround.Endpoint;
             Array.Reverse(choosenPath);
             return choosenPath;
