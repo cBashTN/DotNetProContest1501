@@ -15,21 +15,22 @@ namespace contest.submission.Tests
         public void SimpleGroundTest()
         {
             // Arrange
-            Point startpoint = new Point{x=0,y=0};
-            Point endpoint   = new Point{x=1,y=1};
+            Point startpoint = new Point {x = 0, y = 0};
+            Point endpoint = new Point {x = 1, y = 1};
             BoolArray ground = new BoolArray();
 
             Point[] testPath = new Point[2];
-            testPath[0]      = startpoint;
-            testPath[1]      = endpoint;
+            testPath[0] = startpoint;
+            testPath[1] = endpoint;
 
             // Act
-            IPathFinder pathFinder  = new PathFinder(ground, startpoint, endpoint);
-            Point[] myPath          = pathFinder.FindAPath();
+            IPathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
+            Point[] myPath = pathFinder.FindAPath();
 
             //Assert
-            Assert.AreEqual(testPath, myPath);
             Assert.AreEqual(testPath.Length, myPath.Length); // Is the number of steps the same?
+            Assert.AreEqual(startpoint, myPath[0]);
+            Assert.AreEqual(endpoint, myPath[1]);
         }
 
         [TestMethod()]
@@ -63,7 +64,7 @@ namespace contest.submission.Tests
             BoolArray ground = new BoolArray();
             ground.GenerateObstacle();
 
-            const int expectedStepsCount = 1024;
+            const int expectedStepsCount = 1033; //without the first startpoint
 
             // Act
             IPathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
@@ -71,8 +72,8 @@ namespace contest.submission.Tests
 
             //Assert
             Assert.AreEqual(startpoint, testeePath[0]);
-            Assert.AreEqual(endpoint, testeePath[1023]);
-            Assert.AreEqual(expectedStepsCount, testeePath.Length); // Is the number of steps the same?
+            Assert.AreEqual(endpoint, testeePath[expectedStepsCount]);
+            Assert.AreEqual(expectedStepsCount, testeePath.Length-1); // Is the number of steps the same?
         }
 
 
@@ -84,7 +85,7 @@ namespace contest.submission.Tests
             Point endpoint = new Point { x = 1023, y = 1023 };
 
             BoolArray ground = GenerateObstacleFromBitmap("Labyrinth1.bmp", new BoolArray(), 1); ;
-            const int expectedStepsCount = 42;
+            const int expectedStepsCount = 1623;
 
             // Act
             IPathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
@@ -92,8 +93,8 @@ namespace contest.submission.Tests
 
             //Assert
             Assert.AreEqual(startpoint, testeePath[0]);
-            Assert.AreEqual(endpoint, testeePath[1023]);
-            Assert.AreEqual(expectedStepsCount, testeePath.Length); // Is the number of steps the same?
+            Assert.AreEqual(endpoint, testeePath[expectedStepsCount]);
+            Assert.AreEqual(expectedStepsCount, testeePath.Length-1); // Is the number of steps the same?
         }
 
         [TestMethod()]
@@ -113,8 +114,8 @@ namespace contest.submission.Tests
 
             //Assert
             Assert.AreEqual(startpoint, testeePath[0]);
-            Assert.AreEqual(endpoint, testeePath[1023]);
-            Assert.AreEqual(expectedStepsCount, testeePath.Length); // Is the number of steps the same?
+            Assert.AreEqual(endpoint, testeePath[20020]);
+            Assert.AreEqual(expectedStepsCount, testeePath.Length-1); // Is the number of steps the same?
         }
 
         //TrickyLabyrinthObstacles

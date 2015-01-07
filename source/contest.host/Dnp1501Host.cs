@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using contestrunner.contract.host;
 using contest.submission.contract;
-using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
+
+using Point = contest.submission.contract.Point;
 
 namespace contest.host
 {
@@ -23,6 +28,7 @@ namespace contest.host
     public void Prüfen(object beitrag, string wettbewerbspfad, string beitragsverzeichnis)
     {
       var sut = (IDnp1501Solution)beitrag;
+      var steps = new List<Point>();
 
       sut.MakeMove += (nextposition) =>
       {
@@ -32,6 +38,7 @@ namespace contest.host
             stopmessage = string.Format("Unerlaubter Zug: von {0}, {1} auf {2}, {3}", currentposition.x, currentposition.y, nextposition.x, nextposition.y);
 
           currentposition.Clone(nextposition);
+          steps.Add(new Point { x = nextposition.x, y = nextposition.y });
 
           if (nextposition.IsEqual(endpostion)) stopmessage = "********** Ziel erreicht *********";
         };
@@ -56,6 +63,37 @@ namespace contest.host
       Status(new Prüfungsstatus() { Statusmeldung = stopmessage });
 
       Ende(new Prüfungsende(){ Dauer = DateTime.Now.Subtract(starttime) });
+
+      var f = new Form { ClientSize = new Size(1024, 1024), FormBorderStyle = FormBorderStyle.Fixed3D };
+
+      var b = new Bitmap(1024, 1024);
+
+      for (int i = 0; i < 1024; i++)
+      {
+          for (int k = 0; k < 1024; k++)
+          {
+              b.SetPixel(i, k, ground.Data[i, k] ? Color.Black : Color.SteelBlue);
+          }
+      }
+
+      var g = Graphics.FromImage(b);
+
+      for (int i = 0; i < steps.Count; i++)
+      {
+          var p = steps[i];
+
+          b.SetPixel(p.x, p.y, Color.White);
+
+          if (i % 1000 == 0)
+          {
+              g.DrawString(i.ToString(CultureInfo.InvariantCulture), new Font("Calibri", 8), Brushes.White, p.x, p.y);
+          }
+      }
+
+      f.Paint += (sender, args) => args.Graphics.DrawImage(b, 0, 0);
+
+      f.ShowDialog();
+
     }
 
     public event Action<Prüfungsanfang> Anfang;
