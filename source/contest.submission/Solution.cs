@@ -1,5 +1,5 @@
-﻿using System;
-using contest.submission.contract;
+﻿using contest.submission.contract;
+using System;
 
 namespace contest.submission
 {

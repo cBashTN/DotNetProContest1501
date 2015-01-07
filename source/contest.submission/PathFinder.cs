@@ -1,20 +1,17 @@
-﻿using System;
+﻿using contest.submission.contract;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using contest.submission.contract;
 
 namespace contest.submission
 {
     public class PathFinder : IPathFinder
     {
-        private PlayGround _playGround;
-
+        private readonly PlayGround _playGround;
 
         public PathFinder(BoolArray ground, Point startpoint, Point endpoint)
         {
-           _playGround = new PlayGround(ground, startpoint, endpoint);
- 
+            _playGround = new PlayGround(ground, startpoint, endpoint);
         }
 
         /** Algorithm:
@@ -32,43 +29,41 @@ namespace contest.submission
          * - Go to the next item in the list and repeat until start p is reached 
          * 
         **/
+
         public Point[] FindAPath()
-    {
-        Console.WriteLine("Robot uses his tricorder to find a path...");
-        List<Step> pathSteps = new List<Step>();
-        var stepNumber = 0;
-
-        MapNewStep(pathSteps, _playGround.Endpoint, stepNumber);
-
-        do
         {
-            stepNumber++;
-            var lastStepNumber = stepNumber - 1;
-            foreach (var lastStep in pathSteps.ToArray().Where(step => step.StepCount == lastStepNumber))
+            Console.WriteLine("Robot uses his tricorder to find a path...");
+            List<Step> pathSteps = new List<Step>();
+            var stepNumber = 0;
+
+            _playGround.MapNewStep(pathSteps, _playGround.Endpoint, stepNumber);
+
+            do
             {
-                List<Point> everyDirectionsSteps = GetStepsForEveryDirections(lastStep.Point); //the eight adjacent cells
-                List<Point> possibleSteps = FilterOutInvalidSteps(everyDirectionsSteps); //Check.. If the cell is a wall, remove it from the list
-
-                //Check.. If there is an element in the main list with the same coordinate
-                foreach (var step in possibleSteps.Where(step => !IsStepUsedBefore(step)))
+                stepNumber++;
+                var lastStepNumber = stepNumber - 1;
+                foreach (var lastStep in pathSteps.ToArray().Where(step => step.StepCount == lastStepNumber))
                 {
-                    MapNewStep(pathSteps, step, stepNumber);
-                }
-            }
-            if (stepNumber % 100 == 0) Console.WriteLine(stepNumber + "-th step");
-        } while (!IsStepUsedBefore(_playGround.Startpoint)); //Go to the next item in the list and repeat until start p is reached
+                    //the eight adjacent cells
+                    List<Point> everyDirectionsSteps = GetStepsForEveryDirections(lastStep.Point);
 
-        return ChooseAPathLine(pathSteps);
-    }
-        private void MapNewStep(List<Step> pathSteps, Point step, int stepNumber)
-        {
-            pathSteps.Add(new Step { Point = step, StepCount = stepNumber });
-            _playGround.SetPoint(step, stepNumber);
+                    //Check.. If the cell is a wall, remove it from the list
+                    List<Point> possibleSteps = _playGround.FilterOutInvalidSteps(everyDirectionsSteps);
+
+                    //Check.. If there is an element in the main list with the same coordinate
+                    foreach (var step in possibleSteps.Where(step => !_playGround.IsStepUsedBefore(step)))
+                    {
+                        _playGround.MapNewStep(pathSteps, step, stepNumber);
+                    }
+                }
+                if (stepNumber % 100 == 0) Console.WriteLine(stepNumber + "-th step");
+            } while (!_playGround.IsStepUsedBefore(_playGround.Startpoint)); //Go to the next item in the list and repeat until start is reached
+
+            return ChooseAPathLine(pathSteps);
         }
 
         private Point[] ChooseAPathLine(List<Step> pathSteps)
         {
-
             int stepCountMax = pathSteps.Max(step => step.StepCount);
             int stepCount = stepCountMax;
 
@@ -87,12 +82,14 @@ namespace contest.submission
                 List<Point> stepsForEveryDirections = GetStepsForEveryDirections(choosenPath[i + 1]);
 
                 choosenPath[i] = IntersectAndChooseRandom(stepsForEveryDirections, stepsWithNextStepCount);
+                if (i % 100 == 0) Console.WriteLine(i + "-th step");
             }
             choosenPath[0] = _playGround.Endpoint;
             Array.Reverse(choosenPath);
             return choosenPath;
         }
 
+        // chooses randomely one step from from the adjacent steps that is also one in a path to the endpoint
         private static Point IntersectAndChooseRandom(List<Point> stepsForEveryDirections, List<Step> stepsWithNextStepCount)
         {
             List<Point> intersectedPoints = new List<Point>(8);
@@ -107,40 +104,8 @@ namespace contest.submission
                 }
             }
 
-            Random rnd = new Random();
-
+            var rnd = new Random();
             return intersectedPoints[rnd.Next(intersectedPoints.Count)];
-        }
-
-        private bool IsStepUsedBefore(Point newStep)
-        {
-            //this is too slow
-            //return pathSteps.Any(storedSteps => storedSteps.Point.IsEqual(newStep));
-
-            //broke down to O(1) instead of O(x^2)
-            return _playGround.IsPointUsed(newStep);
-        }
-
-        private List<Point> FilterOutInvalidSteps(List<Point> possibleSteps)
-        {
-            var filteredSteps = new List<Point>(8);
-            filteredSteps.AddRange(possibleSteps.
-                Where(point => !IsOutsideOfTheGround(point)).
-                Where(point => !IsPointAWall(point))
-                );
-            return filteredSteps;
-        }
-
-        private static bool IsOutsideOfTheGround(Point p)
-        {
-            return ((p.x < 0) || (p.x > 1023) || 
-                    (p.y < 0) || (p.y > 1023));
-        }
-
-        bool IsPointAWall(Point p)
-        {
-            // return _ground.IsTrue(p.x, p.y);  // Gives an error others also found (http://www.dotnetpro.de/newsgroups/newsgroupthread.aspx?id=8779)
-            return _playGround.Ground.Data[p.x, p.y];
         }
 
         static List<Point> GetStepsForEveryDirections(Point p)
@@ -158,6 +123,5 @@ namespace contest.submission
             };
             return possiblePoints;
         }
-
     }
 }
