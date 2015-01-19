@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="contest.submission.contract, Version=1.0.0.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\bin\dnp1401\contest.submission.contract.dll</HintPath>
+      <HintPath>..\..\bin\dnp1501\contest.submission.contract.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

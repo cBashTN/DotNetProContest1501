@@ -29,7 +29,6 @@ namespace contest.submission
          * - Go to the next item in the list and repeat until start is reached 
          * 
         **/
-
         public Point[] FindAPath()
         {
             Console.WriteLine("Robot uses his tricorder to find a path...");
@@ -95,7 +94,7 @@ namespace contest.submission
         }
 
         // chooses randomely one step from from the adjacent steps that is also one in a path to the endpoint
-        private static Point IntersectAndChooseRandom(List<Point> stepsForEveryDirections, List<Step> stepsWithNextStepCount)
+        private static Point IntersectAndChooseRandom(IEnumerable<Point> stepsForEveryDirections, List<Step> stepsWithNextStepCount)
         {
             List<Point> intersectedPoints = new List<Point>(8);
             foreach (Point point in stepsForEveryDirections)
@@ -108,7 +107,7 @@ namespace contest.submission
                     }
                 }
             }
-            Random rnd = new Random();
+            var rnd = new Random();
             return intersectedPoints[rnd.Next(intersectedPoints.Count)];
         }
 

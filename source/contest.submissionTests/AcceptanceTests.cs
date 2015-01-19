@@ -7,7 +7,6 @@ using Point = contest.submission.contract.Point;
 
 namespace contest.submissionTests
 {
- 
     [TestClass()]
     public class AcceptanceTests
     {
@@ -140,6 +139,27 @@ namespace contest.submissionTests
             Assert.AreEqual(expectedStepsCount, testeePath.Length - 1); // Is the number of steps the same?
         }
 
+        [TestMethod()]
+        public void Tricky2LabyrinthGroundTest()
+        {
+            // Arrange
+            Point startpoint = new Point { x = 0, y = 0 };
+            Point endpoint = new Point { x = 1023, y = 1023 };
+
+
+            BoolArray ground = GenerateObstacleFromBitmap("labyrinthTricky2.bmp", new BoolArray(), 1); ;
+            const int expectedStepsCount = 1896;
+
+            // Act
+            IPathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
+            Point[] testeePath = pathFinder.FindAPath();
+
+            //Assert
+            Assert.AreEqual(startpoint, testeePath[0]);
+            Assert.AreEqual(endpoint, testeePath[expectedStepsCount]);
+            Assert.AreEqual(expectedStepsCount, testeePath.Length - 1); // Is the number of steps the same?
+        }
+
         public BoolArray GenerateObstacleFromBitmap(String bitmapCopiedContentName, BoolArray ground, int scale)
         {
             var b = new Bitmap(bitmapCopiedContentName, true);
@@ -153,14 +173,12 @@ namespace contest.submissionTests
                 {
                     var pixel = b.GetPixel(i, k);
 
-                    if (pixel.R < 128 && pixel.G < 128 && pixel.B < 128)
+                    if (pixel.R >= 128 || pixel.G >= 128 || pixel.B >= 128) continue;
+                    for (int x = 0; x < scale; x++)
                     {
-                        for (int x = 0; x < scale; x++)
+                        for (int y = 0; y < scale; y++)
                         {
-                            for (int y = 0; y < scale; y++)
-                            {
-                                ground.Data[shiftX + i * scale + x, shiftY + k * scale + y] = true;
-                            }
+                            ground.Data[shiftX + i * scale + x, shiftY + k * scale + y] = true;
                         }
                     }
                 }

@@ -21,6 +21,7 @@ namespace contest.host
     Point startposition = new Point() { x = 0, y = 0 };
     Point endpostion = new Point() { x = 1023, y = 1023 };
 
+
     Point currentposition = new Point();
 
     string stopmessage = "";
@@ -32,7 +33,6 @@ namespace contest.host
 
       sut.MakeMove += (nextposition) =>
       {
-          //Console.WriteLine("nextposition: " + nextposition.x + "/" + nextposition.y);
           counter++;
           if (!ground.IsMoveAllowed(currentposition, nextposition))
             stopmessage = string.Format("Unerlaubter Zug: von {0}, {1} auf {2}, {3}", currentposition.x, currentposition.y, nextposition.x, nextposition.y);
@@ -45,7 +45,8 @@ namespace contest.host
      
       DateTime starttime = DateTime.Now;
 
-      ground.GenerateObstacle();
+        ground.GenerateObstacle();
+    
       
       currentposition.Clone(startposition);
       sut.Start(ground, startposition, endpostion);
@@ -100,6 +101,35 @@ namespace contest.host
     public event Action<Prüfungsstatus> Status;
     public event Action<Prüfungsende> Ende;
     public event Action<Prüfungsfehler> Fehler;
+
+
+    public BoolArray GenerateObstacleFromBitmap(String bitmapCopiedContentName, BoolArray ground, int scale)
+    {
+        var b = new Bitmap(bitmapCopiedContentName, true);
+
+        int shiftX = (1024 - b.Width * scale) / 2;
+        int shiftY = (1024 - b.Height * scale) / 2;
+
+        for (int i = 0; i < b.Width; i++)
+        {
+            for (int k = 0; k < b.Height; k++)
+            {
+                var pixel = b.GetPixel(i, k);
+
+                if (pixel.R < 128 && pixel.G < 128 && pixel.B < 128)
+                {
+                    for (int x = 0; x < scale; x++)
+                    {
+                        for (int y = 0; y < scale; y++)
+                        {
+                            ground.Data[shiftX + i * scale + x, shiftY + k * scale + y] = true;
+                        }
+                    }
+                }
+            }
+        }
+        return ground;
+    }
   }
 
 }
