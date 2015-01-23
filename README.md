@@ -21,4 +21,4 @@ To goal #3) M.Beetz shared a method to graphically display the path of the robot
 M.Beetz path (20020 steps): ![alt text](http://www.beetz.eu/Gelaende3.png "M.Beetz robot's path")
 This solution's path (20020 steps): ![alt text](http://i.imgur.com/DmAq6KG.png "My robot's path")
 
-To goal #4) The worst case labyrinth performance-wise for the algorithm used would be the one from M.Beetz. My older notebook needs 62 seconds for this. As this labyrith's step counts exceeds the official one and due to the low priority I don't waste time for further optimizations. It is good enough. YAGNI.
+To goal #4) The worst case labyrinth performance-wise for the algorithm used would be the one from M.Beetz. My older notebook needs 62 seconds for this. As this labyrith's step count exceeds the official one and due to the low priority, I don't waste time for further optimizations. It is good enough. YAGNI.
