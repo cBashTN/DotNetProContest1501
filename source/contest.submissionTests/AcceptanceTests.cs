@@ -12,7 +12,7 @@ namespace contest.submissionTests
     {
 
         [TestMethod()]
-        public void SimpleGroundTest()
+        public void OneStepTest()
         {
             // Arrange
             Point startpoint = new Point {x = 0, y = 0};
@@ -24,7 +24,7 @@ namespace contest.submissionTests
             testPath[1] = endpoint;
 
             // Act
-            IPathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
+            PathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
             Point[] myPath = pathFinder.FindAPath();
 
             //Assert
@@ -44,7 +44,7 @@ namespace contest.submissionTests
             const int groundDimensionLength = 1024;
 
             // Act
-            IPathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
+            PathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
             Point[] testeePath = pathFinder.FindAPath();
 
             //Assert
@@ -67,7 +67,7 @@ namespace contest.submissionTests
             const int expectedStepsCount = 1033; //without the first startpoint
 
             // Act
-            IPathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
+            PathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
             Point[] testeePath = pathFinder.FindAPath();
 
             //Assert
@@ -88,7 +88,7 @@ namespace contest.submissionTests
             const int expectedStepsCount = 1623;
 
             // Act
-            IPathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
+            PathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
             Point[] testeePath = pathFinder.FindAPath();
 
             //Assert
@@ -98,7 +98,7 @@ namespace contest.submissionTests
         }
 
         [TestMethod()]
-        public void LabyrinthGroundTest()
+        public void LabyrinthBeetzTest()
         {
             // Arrange
             Point startpoint = new Point { x = 511, y = 0 };
@@ -109,7 +109,7 @@ namespace contest.submissionTests
             const int expectedStepsCount = 20020;
 
             // Act
-            IPathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
+            PathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
             Point[] testeePath = pathFinder.FindAPath();
 
             //Assert
@@ -130,7 +130,7 @@ namespace contest.submissionTests
             const int expectedStepsCount = 3501;
 
             // Act
-            IPathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
+            PathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
             Point[] testeePath = pathFinder.FindAPath();
 
             //Assert
@@ -151,7 +151,7 @@ namespace contest.submissionTests
             const int expectedStepsCount = 1896;
 
             // Act
-            IPathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
+            PathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
             Point[] testeePath = pathFinder.FindAPath();
 
             //Assert

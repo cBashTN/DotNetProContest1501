@@ -41,3 +41,11 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Test and Diagnosis artifacts
+*.psess
+*.vsp
+
+# Build artifacts
+*.cache
+*TemporaayGenerated*

@@ -1,4 +1,5 @@
-﻿using contest.submission.contract;
+﻿using System;
+using contest.submission.contract;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,39 +8,40 @@ namespace contest.submission
     class PlayGround
     {
         public BoolArray Ground;
-        public Point Startpoint;
-        public Point Endpoint;
 
         const int PlayGroundDimMaxX = 1024;
         const int PlayGroundDimMaxY = 1024;
 
         private readonly int[,] _stepData = new int[PlayGroundDimMaxX, PlayGroundDimMaxY];
 
-        public PlayGround(BoolArray ground, Point startpoint, Point endpoint)
+        public PlayGround(BoolArray ground)
         {
-            this.Ground     = ground;
-            this.Startpoint = startpoint;
-            this.Endpoint   = endpoint;
-
-            InitializeWithZero();
+            Ground = ground;
         }
 
-        public bool IsStepUsedBefore(Point newStep)
+        public bool IsStepMarkedBefore(Point newStep)
         {
             //this is too slow:
             //return pathSteps.Any(storedSteps => storedSteps.Point.IsEqual(newStep));
 
             //broke down to O(1) instead of O(x^2) by using a "hash-array"
-            return IsPointUsed(newStep);
+            return IsPointMarked(newStep);
         }
 
-        public void MapNewStep(List<Step> pathSteps, Point step, int stepNumber)
+        public void MarkNewStep(List<Point>[] pathSteps, Point step, int stepNumber)
         {
-            pathSteps.Add(new Step { Point = step, StepCount = stepNumber });
+            if (pathSteps[stepNumber] == null)
+            {
+                pathSteps[stepNumber] = new List<Point>() { step };
+            }
+            else
+            {
+                pathSteps[stepNumber].Add(step);
+            }
             SetStepNumberToPoint(stepNumber, step);
         }
 
-        public List<Point> FilterOutInvalidSteps(List<Point> possibleSteps)
+        public IEnumerable<Point> FilterOutInvalidSteps(IEnumerable<Point> possibleSteps)
         {
             var filteredSteps = new List<Point>(8);
             filteredSteps.AddRange(possibleSteps.
@@ -50,8 +52,8 @@ namespace contest.submission
 
         private static bool IsOutsideOfTheGround(Point p)
         {
-            return ((p.x < 0) || (p.x > PlayGroundDimMaxX-1) ||
-                    (p.y < 0) || (p.y > PlayGroundDimMaxY-1));
+            return ((p.x < 0) || (p.x > PlayGroundDimMaxX - 1) ||
+                    (p.y < 0) || (p.y > PlayGroundDimMaxY - 1));
         }
 
         private bool IsPointAWall(Point p)
@@ -60,7 +62,7 @@ namespace contest.submission
             return Ground.Data[p.x, p.y];
         }
 
-        private bool IsPointUsed(Point p)
+        private bool IsPointMarked(Point p)
         {
             return _stepData[p.x, p.y] > 0;
         }
@@ -70,15 +72,5 @@ namespace contest.submission
             _stepData[p.x, p.y] = stepCount;
         }
 
-        private void InitializeWithZero()
-        {
-            for (var i = 0; i < PlayGroundDimMaxX; i++)
-            {
-                for (var j = 0; j < PlayGroundDimMaxY; j++)
-                {
-                    _stepData[i, j] = 0;
-                }
-            }
-        }
     }
 }
