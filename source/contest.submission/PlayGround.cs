@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using contest.submission.contract;
+﻿using contest.submission.contract;
 
 namespace contest.submission
 {
@@ -8,13 +6,14 @@ namespace contest.submission
     {
         private const int PlayGroundDimMaxX = 1024;
         private const int PlayGroundDimMaxY = 1024;
-        private const int PlayGroundDimArrayMaxX = 1023;
-        private const int PlayGroundDimArrayMaxY = 1023;
+        private const int PlayGroundDimArrayMaxX = PlayGroundDimMaxX-1;
+        private const int PlayGroundDimArrayMaxY = PlayGroundDimMaxY-1;
 
         private readonly int[,] _lastStepX = new int[PlayGroundDimMaxX, PlayGroundDimMaxY];
         private readonly int[,] _lastStepY = new int[PlayGroundDimMaxX, PlayGroundDimMaxY];
+
         private readonly int[,] _stepData  = new int[PlayGroundDimMaxX, PlayGroundDimMaxY];
-        
+
         public BoolArray Ground;
 
         public PlayGround(BoolArray ground)
@@ -37,30 +36,9 @@ namespace contest.submission
             return _stepData[p.x, p.y] == 0;
         }
 
-        public int GetStepNumberFromPoint(Point p)
+        public bool IsNewStep(int x, int y)
         {
-            return _stepData[p.x, p.y];
-        }
-
-        public IEnumerable<Point> FilterOutInvalidSteps(IEnumerable<Point> possibleSteps)
-        {
-            var filteredSteps = new List<Point>(8);
-            filteredSteps.AddRange(possibleSteps.
-                Where(p => !IsOutsideOfTheGround(p)). //this check must be before..
-                Where(p => !IsPointAWall(p))); //..checking the actual array
-            return filteredSteps;
-        }
-
-        private static bool IsOutsideOfTheGround(Point p)
-        {
-            return ((p.x < 0) || (p.x > PlayGroundDimArrayMaxX) ||
-                    (p.y < 0) || (p.y > PlayGroundDimArrayMaxY));
-        }
-
-        private bool IsPointAWall(Point p)
-        {
-            // return _ground.IsTrue(p.x, p.y);  // Gives an error others also found (http://www.dotnetpro.de/newsgroups/newsgroupthread.aspx?id=8779)
-            return Ground.Data[p.x, p.y];
+            return _stepData[x, y] == 0;
         }
 
         public void SetStepNumberToPoint(int stepCount, Point p)
@@ -72,6 +50,22 @@ namespace contest.submission
         {
             _lastStepX[newPoint.x, newPoint.y] = lastPoint.x;
             _lastStepY[newPoint.x, newPoint.y] = lastPoint.y;
+        }
+
+        public int GetStepNumberFromPoint(Point p)
+        {
+            return _stepData[p.x, p.y];
+        }
+
+        public bool IsOutsideOfTheGround(int x, int y)
+        {
+            return ((x < 0) || (x > PlayGroundDimArrayMaxX) ||
+                    (y < 0) || (y > PlayGroundDimArrayMaxY));
+        }
+
+        public bool IsPointAWall(int x, int y)
+        {
+            return Ground.Data[x, y];
         }
     }
 }
