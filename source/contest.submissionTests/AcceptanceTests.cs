@@ -37,8 +37,8 @@ namespace contest.submissionTests
         public void OpenGroundTest()
         {
             // Arrange
-            Point startpoint = new Point { x = 1023, y = 1023 };
-            Point endpoint = new Point { x = 0, y = 0 };
+            Point startpoint = new Point { x = 0, y = 0 };
+            Point endpoint = new Point { x = 1023, y = 1023 };
             BoolArray ground = new BoolArray();
 
             const int groundDimensionLength = 1024;
@@ -53,6 +53,37 @@ namespace contest.submissionTests
             Assert.AreEqual(groundDimensionLength, testeePath.Length); // Is the number of steps the same?
         }
 
+        [TestMethod()]
+        public void FewObstaclesGroundTest()
+        {
+            // Arrange
+            Point startpoint = new Point { x = 6, y = 2 };
+            Point endpoint = new Point { x = 0, y = 0 };
+            BoolArray ground = new BoolArray();
+
+            const int groundDimensionLength = 6;
+
+            ground.Data[1, 2] = true;
+            ground.Data[1, 4] = true;
+            ground.Data[2, 0] = true;
+            ground.Data[2, 1] = true;
+            ground.Data[2, 3] = true;
+            ground.Data[2, 4] = true;
+            ground.Data[3, 4] = true;
+            ground.Data[4, 4] = true;
+            ground.Data[5, 2] = true;
+            ground.Data[5, 3] = true;
+            ground.Data[5, 4] = true;
+            ground.Data[6, 1] = true;
+            // Act
+            PathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
+            Point[] testeePath = pathFinder.FindAPath();
+
+            //Assert
+            Assert.AreEqual(startpoint, testeePath[0]);
+            Assert.AreEqual(endpoint, testeePath[groundDimensionLength]);
+            Assert.AreEqual(groundDimensionLength, testeePath.Length-1); // Is the number of steps the same?
+        }
 
         [TestMethod()]
         public void DefaultObstaclesGroundTest()
