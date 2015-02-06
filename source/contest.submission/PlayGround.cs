@@ -1,59 +1,60 @@
-﻿using System;
-using contest.submission.contract;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using contest.submission.contract;
 
 namespace contest.submission
 {
-    class PlayGround
+    internal class PlayGround
     {
+        private const int PlayGroundDimMaxX = 1024;
+        private const int PlayGroundDimMaxY = 1024;
+        private const int PlayGroundDimArrayMaxX = 1023;
+        private const int PlayGroundDimArrayMaxY = 1023;
+
+        private readonly int[,] _lastStepX = new int[PlayGroundDimMaxX, PlayGroundDimMaxY];
+        private readonly int[,] _lastStepY = new int[PlayGroundDimMaxX, PlayGroundDimMaxY];
+        private readonly int[,] _stepData  = new int[PlayGroundDimMaxX, PlayGroundDimMaxY];
+        
         public BoolArray Ground;
-
-        const int PlayGroundDimMaxX = 1024;
-        const int PlayGroundDimMaxY = 1024;
-
-        private readonly int[,] _stepData = new int[PlayGroundDimMaxX, PlayGroundDimMaxY];
 
         public PlayGround(BoolArray ground)
         {
             Ground = ground;
         }
 
-        public bool IsStepMarkedBefore(Point newStep)
+        public int[,] LastStepX
         {
-            //this is too slow:
-            //return pathSteps.Any(storedSteps => storedSteps.Point.IsEqual(newStep));
-
-            //broke down to O(1) instead of O(x^2) by using a "hash-array"
-            return IsPointMarked(newStep);
+            get { return _lastStepX; }
         }
 
-        public void MarkNewStep(List<Point>[] pathSteps, Point step, int stepNumber)
+        public int[,] LastStepY
         {
-            if (pathSteps[stepNumber] == null)
-            {
-                pathSteps[stepNumber] = new List<Point>() { step };
-            }
-            else
-            {
-                pathSteps[stepNumber].Add(step);
-            }
-            SetStepNumberToPoint(stepNumber, step);
+            get { return _lastStepY; }
+        }
+
+        public bool IsNewStep(Point p)
+        {
+            return _stepData[p.x, p.y] == 0;
+        }
+
+        public int GetStepNumberFromPoint(Point p)
+        {
+            return _stepData[p.x, p.y];
         }
 
         public IEnumerable<Point> FilterOutInvalidSteps(IEnumerable<Point> possibleSteps)
         {
             var filteredSteps = new List<Point>(8);
             filteredSteps.AddRange(possibleSteps.
-                Where(point => !IsOutsideOfTheGround(point)).   //this check must be before..
-                Where(point => !IsPointAWall(point)));          //..checking the actual array
+                Where(p => !IsOutsideOfTheGround(p)). //this check must be before..
+                Where(p => !IsPointAWall(p))); //..checking the actual array
             return filteredSteps;
         }
 
         private static bool IsOutsideOfTheGround(Point p)
         {
-            return ((p.x < 0) || (p.x > PlayGroundDimMaxX - 1) ||
-                    (p.y < 0) || (p.y > PlayGroundDimMaxY - 1));
+            return ((p.x < 0) || (p.x > PlayGroundDimArrayMaxX) ||
+                    (p.y < 0) || (p.y > PlayGroundDimArrayMaxY));
         }
 
         private bool IsPointAWall(Point p)
@@ -62,15 +63,15 @@ namespace contest.submission
             return Ground.Data[p.x, p.y];
         }
 
-        private bool IsPointMarked(Point p)
-        {
-            return _stepData[p.x, p.y] > 0;
-        }
-
-        private void SetStepNumberToPoint(int stepCount, Point p)
+        public void SetStepNumberToPoint(int stepCount, Point p)
         {
             _stepData[p.x, p.y] = stepCount;
         }
 
+        public void SetOriginStepNumberToPoint(Point lastPoint, Point newPoint)
+        {
+            _lastStepX[newPoint.x, newPoint.y] = lastPoint.x;
+            _lastStepY[newPoint.x, newPoint.y] = lastPoint.y;
+        }
     }
 }
