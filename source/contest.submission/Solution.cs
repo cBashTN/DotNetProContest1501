@@ -3,7 +3,6 @@ using System;
 
 namespace contest.submission
 {
-
     [Serializable]
     public class Solution : IDnp1501Solution
     {
@@ -22,7 +21,6 @@ namespace contest.submission
 
         public void NextStep()
         {
-
             MakeMove(_path[_stepNumber++]);
         }
 
