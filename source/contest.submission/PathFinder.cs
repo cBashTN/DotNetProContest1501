@@ -69,6 +69,7 @@ namespace contest.submission
                 if (   !_playGround.IsOutsideOfTheGround(_nextPossibleX[i], _nextPossibleY[i])
                     && !_playGround.IsPointAWall(        _nextPossibleX[i], _nextPossibleY[i]) //If the cell is a wall, remove it from the list
                     &&  _playGround.IsNewStep(           _nextPossibleX[i], _nextPossibleY[i]) //If there is an element in the main list with the same coordinate and an equal or higher counter
+                    && !((_nextPossibleX[i] == _endPoint.x) && (_nextPossibleY[i] == _endPoint.y))
                     )
                 {
                     yield return new Point { x = _nextPossibleX[i], y = _nextPossibleY[i] };
@@ -76,26 +77,25 @@ namespace contest.submission
             }
         }
 
-        // Goes back from the endpoint (stepCountMax) to the startpoint (0) using the last steps which were stored for each used step
+        // Goes back from the startpoint (0) to the endpoint (stepCountMax) by using the last steps which were stored for each used step
         private Point[] ChooseAPathLine(int stepCountMax)
         {
             Point[] choosenPath = new Point[stepCountMax + 1];
+            choosenPath[0] = _startPoint;
 
-            choosenPath[stepCountMax] = _endPoint;
-
-            for (var stepCount = stepCountMax - 1; stepCount > 0; stepCount--)
+            for (var stepCount = 0; stepCount < stepCountMax-1; stepCount++)
             {
-                var nextX = choosenPath[stepCount + 1].x;
-                var nextY = choosenPath[stepCount + 1].y;
+                var nextX = choosenPath[stepCount].x;
+                var nextY = choosenPath[stepCount].y;
 
-                choosenPath[stepCount] = new Point()
+                choosenPath[stepCount+1] = new Point()
                 {
                     x = _playGround.LastStepX[nextX, nextY],
                     y = _playGround.LastStepY[nextX, nextY]
                 };
             }
 
-            choosenPath[0] = _startPoint;
+            choosenPath[stepCountMax] = _endPoint;
             return choosenPath;
         }
 
