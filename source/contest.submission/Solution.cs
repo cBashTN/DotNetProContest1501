@@ -7,11 +7,12 @@ namespace contest.submission
     public class Solution : IDnp1501Solution
     {
         private int _stepNumber;
+        [NonSerializedAttribute]
         private Point[] _path;
 
         public void Start(BoolArray ground, Point startpoint, Point endpoint)
         {
-            PathFinder pathFinder = new PathFinder(ground, startpoint, endpoint);
+            Pathfinder pathFinder = new Pathfinder(ground, startpoint, endpoint);
             _path = pathFinder.FindAPath();
             
             _stepNumber = 1; // 0 would be the startpoint
