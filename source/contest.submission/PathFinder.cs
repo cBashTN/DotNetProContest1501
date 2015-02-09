@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace contest.submission
 {
-    public class PathFinder
+    public class Pathfinder
     {
         private readonly PlayGround _playGround;
         private readonly Point _startPoint;
@@ -12,11 +12,12 @@ namespace contest.submission
         private readonly int[] _nextPossibleX = new int[8];
         private readonly int[] _nextPossibleY = new int[8];
 
+        
         // Every step number has its own list of points. These lists are stored in an array (_steps) that is inxed by the step number
         // 530000 exceeds the maximum possible path in a 1024x1024 playground
         private readonly List<Point>[] _steps = new List<Point>[530000];
 
-        public PathFinder(BoolArray ground, Point startpoint, Point endpoint)
+        public Pathfinder(BoolArray ground, Point startpoint, Point endpoint)
         {
             _playGround = new PlayGround(ground);
             _startPoint = startpoint;
@@ -41,7 +42,7 @@ namespace contest.submission
         public Point[] FindAPath()
         {
             var stepNumber = 0;
-            MarkNewStep(null, _endPoint, stepNumber);
+            AddAndMarkNewStep(null, _endPoint, stepNumber);
 
             do
             {
@@ -52,10 +53,10 @@ namespace contest.submission
                 {
                     foreach (var newStep in NextPossibleSteps(lastStep))
                     {
-                        MarkNewStep(lastStep, newStep, stepNumber); //Add all remaining cells in the list to the end of the main list
+                        AddAndMarkNewStep(lastStep, newStep, stepNumber); //Add all remaining cells in the list to the end of the main list
                     }
                 }
-            } while (_playGround.IsNewStep(_startPoint)); //Go to the next item in the list and repeat until start is reached 
+            } while (_playGround.IsNewStep(_startPoint.x,_startPoint.y)); //Go to the next item in the list and repeat until start is reached 
 
             return ChooseAPathLine(stepNumber);
         }
@@ -66,11 +67,10 @@ namespace contest.submission
 
             for (int i = 0; i < 8; i++)
             {
-                if (   !_playGround.IsOutsideOfTheGround(_nextPossibleX[i], _nextPossibleY[i])
-                    && !_playGround.IsPointAWall(        _nextPossibleX[i], _nextPossibleY[i]) //If the cell is a wall, remove it from the list
-                    &&  _playGround.IsNewStep(           _nextPossibleX[i], _nextPossibleY[i]) //If there is an element in the main list with the same coordinate and an equal or higher counter
-                    && !((_nextPossibleX[i] == _endPoint.x) && (_nextPossibleY[i] == _endPoint.y))
-                    )
+                //Check all cells in each list for the following two conditions:
+                // - If the cell is a wall, remove it from the list
+                // - If there is an element in the main list with the same coordinate and an equal or higher counter
+                if (_playGround.IsValid(i, _nextPossibleX[i], _nextPossibleY[i]))
                 {
                     yield return new Point { x = _nextPossibleX[i], y = _nextPossibleY[i] };
                 }
@@ -80,7 +80,7 @@ namespace contest.submission
         // Goes back from the startpoint (0) to the endpoint (stepCountMax) by using the last steps which were stored for each used step
         private Point[] ChooseAPathLine(int stepCountMax)
         {
-            Point[] choosenPath = new Point[stepCountMax + 1];
+            var choosenPath = new Point[stepCountMax + 1];
             choosenPath[0] = _startPoint;
 
             for (var stepCount = 0; stepCount < stepCountMax-1; stepCount++)
@@ -100,23 +100,24 @@ namespace contest.submission
         }
 
         // Every step field will be stored in a list. Every stepnumber has its own list.
-        private void MarkNewStep(Point lastStep, Point step, int stepNumber)
+        private void AddAndMarkNewStep(Point lastStep, Point step, int stepNumber)
         {
-            if (_steps[stepNumber] == null)
-            {
-                _steps[stepNumber] = new List<Point>() { step };
-            }
-            else
-            {
-                _steps[stepNumber].Add(step);
+            AddNewStep(step, stepNumber);
+            _playGround.MarkNewStep(lastStep, step, stepNumber);
+        }
+
+        private void AddNewStep(Point step, int stepNumber)
+        {
+            if (IsANewStepNumber(stepNumber))
+                    {
+                _steps[stepNumber] = new List<Point>();
+                }
+            _steps[stepNumber].Add(step);
             }
 
-            _playGround.SetStepNumberToPoint(stepNumber, step);
-
-            if (lastStep != null)
-            {
-                _playGround.SetOriginStepNumberToPoint(lastStep, step);
-            }
+        private bool IsANewStepNumber(int stepNumber)
+        {
+            return _steps[stepNumber] == null;
         }
 
         private void SetTheEightAdjacentSteps(Point p)
